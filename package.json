@@ -1,0 +1,20 @@
+{
+  "name": "devops-ai-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpsPilot — an agentic DevOps assistant on AWS",
+  "workspaces": [
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @opspilot/web -- --host 0.0.0.0 --port 4173",
+    "build": "npm run build --workspace @opspilot/web",
+    "typecheck": "npm run typecheck --workspace @opspilot/web",
+    "test": "npm run test --workspace @opspilot/web",
+    "check": "npm run typecheck && npm run test && npm run build"
+  }
+}
+

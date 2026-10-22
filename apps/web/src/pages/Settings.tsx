@@ -1,0 +1,23 @@
+import { useState } from 'react';
+import { Activity, ArrowRight, Check, Copy, GitBranch, Globe, Info, Lock, Terminal } from 'lucide-react';
+import { useWorkspace } from '../app/WorkspaceContext';
+import { checkApiHealth } from '../lib/api';
+import { PageHeader, Pill } from '../components/UI';
+
+export function SettingsPage() {
+  const { notify } = useWorkspace();
+  const [base, setBase] = useState(import.meta.env.VITE_API_BASE_URL || '/api');
+  const [checking, setChecking] = useState(false);
+  const [health, setHealth] = useState<{ ok: boolean; text: string }>();
+  async function check() {
+    setChecking(true); setHealth(undefined);
+    try { const result = await checkApiHealth(base); setHealth({ ok: true, text: 'API reachable · ' + (result.mode || 'health response received') + '. The starter agent is not configured.' }); }
+    catch (error) { setHealth({ ok: false, text: error instanceof Error ? error.message : 'The API is not reachable.' }); }
+    setChecking(false);
+  }
+  async function copySetup() {
+    try { await navigator.clipboard.writeText('git init -b main\ngit add .\ngit commit -m "Initialize DevOps AI assistant"'); notify('Initial Git commands copied.'); } catch { notify('Clipboard access is unavailable. The commands are in README.md.'); }
+  }
+  return <><PageHeader eyebrow="A FOUNDATION WITH ROOM TO GROW" title="Workspace Settings" description="Understand what is running now and what comes next." /><div className="settings-grid"><section className="panel settings-panel"><div className="panel-heading"><div className="inline-heading"><Globe size={20} /><h2>API connection</h2></div><Pill tone="amber">Scaffold</Pill></div><div className="settings-body"><p>The frontend currently uses local demo scenarios. Test the starter API health endpoint here.</p><label className="field-label" htmlFor="api-base">API base URL</label><input className="text-input" id="api-base" value={base} onChange={(event) => setBase(event.target.value)} placeholder="/api" /><small className="field-help">The development proxy forwards /api to localhost:8000.</small><button className="button button-secondary" onClick={check} disabled={checking}><Activity size={16} />{checking ? 'Checking…' : 'Test API connection'}</button>{health && <div className={'connection-result ' + (health.ok ? 'success' : 'failure')} role="status">{health.ok ? <Check size={17} /> : <Info size={17} />}<span>{health.text}</span></div>}<div className="inline-note"><Lock size={16} /><span>Keep cloud credentials on the server. This field stores no credentials and does not enable a live agent.</span></div></div></section><section className="panel settings-panel"><div className="panel-heading"><div className="inline-heading"><GitBranch size={20} /><h2>GitHub project setup</h2></div><Pill>Monorepo</Pill></div><div className="settings-body"><p>Start one repository with separate deployable applications and shared documentation.</p><div className="folder-list"><span><strong>apps/web</strong>React + TypeScript frontend</span><span><strong>services/api</strong>FastAPI service scaffold</span><span><strong>services/agent-worker</strong>Agent runtime scaffold</span><span><strong>infra/terraform</strong>AWS infrastructure milestones</span><span><strong>.github/workflows</strong>Build and validation automation</span></div><div className="setup-commands"><div><Terminal size={15} />Initial Git commands<button className="icon-button" aria-label="Copy initial Git commands" onClick={copySetup}><Copy size={15} /></button></div><pre>{'git init -b main\ngit add .\ngit commit -m "Initialize DevOps AI assistant"'}</pre></div><small className="field-help">Create an empty GitHub repository, then follow README.md to add its remote and push.</small></div></section></div><section className="panel roadmap-panel"><div className="panel-heading"><h2>Project milestones</h2><Pill tone="green">You are here</Pill></div><div className="milestone-grid">{[{ label: '01', title: 'Frontend foundation', body: 'Workspace, demo investigations and local runbooks.', current: true }, { label: '02', title: 'RAG knowledge', body: 'Ingestion, embeddings, retrieval and citations.' }, { label: '03', title: 'Operational agent', body: 'LangGraph, scoped tools and durable investigations.' }, { label: '04', title: 'AWS & LLMOps', body: 'Terraform, identity, evaluations and recovery.' }].map((item) => <div className={'milestone ' + (item.current ? 'current' : '')} key={item.label}><span>{item.current ? <Check size={17} /> : item.label}</span><h3>{item.title}</h3><p>{item.body}</p>{item.current && <small>Current milestone <ArrowRight size={13} /></small>}</div>)}</div></section></>;
+}
+
