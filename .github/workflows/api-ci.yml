@@ -1,0 +1,23 @@
+name: API scaffold CI
+on:
+  push:
+    branches: [main]
+    paths: ['services/**', '.github/workflows/api-ci.yml']
+  pull_request:
+    paths: ['services/**', '.github/workflows/api-ci.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install ./services/api
+      - name: Check Python syntax
+        run: python -m compileall -q services/api/app services/agent-worker/src
+      - name: Import API application
+        run: python -c "from app.main import app; assert app.version == '0.1.0'"
+

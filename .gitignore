@@ -1,0 +1,37 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+build/
+*.egg-info/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.aws/
+kubeconfig*
+!**/kubeconfig.example
+credentials.json
+
+# Terraform state and local caches
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+# Commit .terraform.lock.hcl when modules are implemented.
+
+# Local artifacts
+*.zip
+.DS_Store
+.vscode/
+.idea/
+
