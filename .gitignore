@@ -9,6 +9,10 @@ __pycache__/
 .pytest_cache/
 build/
 *.egg-info/
+.data/
+*.db
+*.db-shm
+*.db-wal
 
 # Local configuration and credentials
 .env
